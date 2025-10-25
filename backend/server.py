@@ -220,6 +220,19 @@ async def update_robot(robot_id: str, robot_update: RobotUpdate):
     
     return {"message": "Robot updated successfully"}
 
+@api_router.post("/robots/reset-all")
+async def reset_all_robots():
+    """Reset all robots to ENTRANCE location"""
+    await db.robots.update_many(
+        {},
+        {"$set": {
+            "location": "ENTRANCE",
+            "status": "idle",
+            "tasks_completed_today": 0
+        }}
+    )
+    return {"message": "All robots reset to ENTRANCE"}
+
 # Analytics routes
 @api_router.get("/analytics/stats", response_model=AnalyticsStats)
 async def get_analytics_stats():
