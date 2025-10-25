@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediFleet: Swarm-in-a-Box | Home</title>
+    <link rel="stylesheet" href="style.css"> 
+</head>
+<body>
+    <body class="features-page-style">
+    </body>
+    <nav>
+        <div class="logo">
+            <a href="index.html">MediFleet 🔥</a>
+        </div>
+        <ul class="nav-links">
+            <li><a href="features.html">Features</a></li>
+            <li><a href="architecture.html">Architecture</a></li>
+            <li><a href="demo.html">Demo</a></li>
+            <li><a href="usecase.html">Use Case (Hospital)</a></li>
+            <li><a href="scalability.html">Scalability</a></li>
+            <li><a href="roadmap.html">Roadmap</a></li>
+            <li><a href="documentation.html">Documentation</a></li>
+            <li><a href="team.html">Team</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <section class="hero-section">
+            <div class="hero-content">
+                <h1 class="hero-title">Introducing Our Cutting-Edge System</h1>
+                <p class="hero-tagline">Discover the potential of our innovative multi-robot task allocation system. Designed for modern hospitals, our solution enhances logistical efficiency and supports a seamless integration of existing and new robotic technologies. By prioritizing user experience and operational excellence, we aim to showcase the future of smart hospital logistics</p>
+            </div>
+        </section>
+
+        <section class="section-padded feature-overview">
+            <h2 class="section-title">The Advantages of Partnering with Us </h2>
+            
+            <div class="feature-grid">
+                <img src="images/icon_scale.png" alt="Scale Icon">
+                <h3>True Scalability</h3>
+                <p>Add 2 or 20 robots instantly. Throughput scales linearly with fleet size, thanks to identical, modular code.</p>
+                <div class="feature-card">
+                    <img src="images/icon_logic.png" alt="Logic Icon">
+                    <h3>Autonomous Bidding Logic</h3>
+                    <p>Robots self-allocate tasks using a proximity-based formula, ensuring the nearest unit executes the delivery.</p>
+                </div>
+                <div class="feature-card">
+                    <img src="images/icon_cost.png" alt="Cost Icon">
+                    <h3>Low-Cost Hardware</h3>
+                    <p>Built on ESP32, the system maintains reliability and robust communication without requiring expensive commercial AGVs.</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section-padded architecture-preview">
+            <h2 class="section-title dark-text">System Architecture: Cloud Communication</h2>
+            <div class="content-split">
+                <div class="split-text">
+                    <p>The system operates on a reliable, low-latency foundation using the **MQTT Protocol** over Wi-Fi. A central manager publishes tasks; robots subscribe, bid, and execute missions, providing real-time status updates via JSON messaging.</p>
+                    <a href="architecture.html" class="link-more">View Full Architecture Diagram →</a>
+                </div>
+                <div class="split-image">
+                    <img src="images/architecture_preview.png" alt="Architecture Diagram Preview">
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>MediFleet | Smart Hospital Logistics | Hackathon Project 2025</p>
+        <p><a href="documentation.html">Documentation</a> | <a href="contact.html">Contact Team</a></p>
+    </footer>
+</body>
+</html>

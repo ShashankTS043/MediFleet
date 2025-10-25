@@ -1,0 +1,206 @@
+/* --- GLOBAL STYLES & RESET --- */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #ffffff; /* Clean white background */
+    color: black;
+    line-height: 1.6;
+}
+h1, h2, h3 {
+    font-weight: 700;
+    color: black;
+}
+.section-title {
+    text-align: center;
+    margin-bottom: 50px;
+    font-size: 2em;
+    color: #004c99; /* Deep blue for titles */
+}
+.section-padded {
+    padding: 80px 5%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+
+/* --- 1. NAVIGATION STYLES --- */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #e0f0ff; /* Primary Brand Blue */
+    padding: 15px 5%;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+nav .logo a {
+    color: black;
+    font-size: 1.5em;
+    font-weight: bold;
+    text-decoration: none;
+}
+.nav-links {
+    list-style: none;
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+.nav-links li a {
+    color: black;
+    text-decoration: none;
+    margin-left: 20px;
+    font-size: 0.9em;
+    transition: color 0.3s;
+}
+.nav-links li a:hover {
+    color: #e0f0ff;
+}
+
+
+/* --- 2. HERO SECTION STYLES --- */
+.hero-section {
+    background-color: #D3D3D3; /* Light blue background for visual punch */
+    padding: 100px 5%;
+    text-align: center;
+}
+.hero-title {
+    font-size: 2.8em;
+    color: #1E6B5C;
+    margin-bottom: 10px;
+}
+.hero-tagline {
+    font-size: 1.3em;
+    color: #555;
+    margin-bottom: 40px;
+}
+.cta-button {
+    background-color: #00a859; /* Green/Teal for high visibility */
+    color: white;
+    padding: 18px 40px;
+    text-decoration: none;
+    font-size: 1.3em;
+    font-weight: bold;
+    border-radius: 5px;
+    display: inline-block;
+    transition: background-color 0.3s, transform 0.2s;
+}
+.cta-button:hover {
+    background-color: #008f4c;
+    transform: translateY(-2px);
+}
+    
+/* --- 3. FEATURE GRID STYLES (Wireframe Replication) --- */
+/* --- CUSTOM OVERRIDE FOR FEATURES PAGE HERO --- */
+
+/* 1. Target the Hero Section ONLY when it's inside the features-page-style body */
+.features-page-style .hero-section {
+    background-color: #1E6B5C; /* Light Teal/Cyan background */
+    /* You can also change the bottom border color for a more distinct separator */
+    border-bottom: 5px solid #00a859; /* Matching the green CTA button */
+}
+
+/* 2. Change the Title Color for contrast on the Features Page */
+.features-page-style .hero-title {
+    color: white; /* Darker green/teal text */
+}
+
+/* 3. Change the Tagline Color */
+.features-page-style .hero-tagline {
+    color: black; 
+}
+.feature-overview {
+    background-color: white;
+}
+
+.feature-grid {
+    display: flex; /* Use Flexbox for row layout */
+    justify-content: space-between;
+    gap: 30px;
+    text-align: center;
+}
+.feature-card {
+    flex: 1; /* Makes all cards take equal width */
+    background-color: #f8f8f8;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); /* Subtle shadow for depth */
+}
+.feature-card img {
+    max-width: 60px;
+    margin-bottom: 15px;
+}
+.feature-card h3 {
+    color: #007bff;
+}
+
+
+/* --- 4. ARCHITECTURE PREVIEW STYLES (2-Column Layout) --- */
+.architecture-preview {
+    background-color: #f0f8ff;
+}
+.content-split {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+}
+.split-text {
+    flex: 1;
+}
+.split-image {
+    flex: 1;
+    text-align: center;
+}
+.split-image img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+.link-more {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+    display: inline-block;
+    margin-top: 15px;
+}
+
+
+/* --- 5. FOOTER STYLES --- */
+footer {
+    background-color: #222;
+    color: #ccc;
+    padding: 30px 5%;
+    text-align: center;
+    font-size: 0.85em;
+}
+footer a {
+    color: #00a859;
+    text-decoration: none;
+    margin: 0 10px;
+}
+
+
+/* --- RESPONSIVENESS (Crucial for Mobile/Tablet) --- */
+@media (max-width: 768px) {
+    nav {
+        flex-direction: column;
+        text-align: center;
+    }
+    .nav-links {
+        margin-top: 10px;
+        flex-wrap: wrap; /* Allows links to wrap on small screens */
+        justify-content: center;
+    }
+    .nav-links li a {
+        margin: 5px 10px;
+    }
+    .hero-title {
+        font-size: 2em;
+    }
+    .feature-grid, .content-split {
+        flex-direction: column; /* Stacks columns vertically on mobile */
+    }
+    .feature-card {
+        width: 90%; /* Cards take up nearly full width */
+    }
+}
