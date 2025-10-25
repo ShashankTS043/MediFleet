@@ -102,34 +102,34 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Transform ENTRANCE waypoint into a detailed robot parking station with specific robot positioning and labels"
+user_problem_statement: "Critical bug fix: Wrong robot being assigned to tasks even when correct robot wins the bid. Backend bidding algorithm was using highest battery instead of bid score calculation."
 
-frontend:
-  - task: "ENTRANCE Parking Station Enhancement"
+backend:
+  - task: "Fix bidding algorithm to use bid scores"
     implemented: true
     working: true
-    file: "/app/frontend/src/components/FloorMap.jsx"
+    file: "/app/backend/server.py"
     stuck_count: 0
-    priority: "high"
-    needs_retesting: false
+    priority: "critical"
+    needs_retesting: true
     status_history:
       - working: true
         agent: "main"
-        comment: "Transformed ENTRANCE from circle to rounded rectangle parking zone (150px × 80px). Added dashed outline box covering all 3 robots horizontally positioned. Robots labeled as R1, R2, R3 when parked. Visual styling complete with proper spacing."
+        comment: "Fixed process_bidding() function to calculate bid scores based on distance and battery (same formula as frontend). Changed from 'max battery' to 'max bid score' selection. Backend now matches frontend bidding logic."
 
 metadata:
   created_by: "main_agent"
   version: "1.0"
-  test_sequence: 1
+  test_sequence: 2
   run_ui: false
 
 test_plan:
   current_focus:
-    - "ENTRANCE Parking Station Enhancement"
+    - "Fix bidding algorithm to use bid scores"
   stuck_tasks: []
   test_all: false
-  test_priority: "high_first"
+  test_priority: "critical_first"
 
 agent_communication:
   - agent: "main"
-    message: "Completed ENTRANCE parking station transformation. Changed waypoint from circle to rounded rectangle (24×14 units), positioned 3 robots horizontally at coordinates [42, 50, 58], added dashed outline box encompassing all robots, and implemented R1/R2/R3 labels. Screenshot verification shows proper rendering with all requirements met."
+    message: "Fixed critical bug in backend bidding algorithm. The issue was that backend was selecting robot with highest battery, while frontend was showing winner based on bid scores (distance + battery). Now both use same algorithm: bid_score = (1000 / distance) * (battery / 100). Robot closest to destination with good battery will win. Need to test with real task creation."
