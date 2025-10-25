@@ -111,11 +111,14 @@ backend:
     file: "/app/backend/server.py"
     stuck_count: 0
     priority: "critical"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: true
         agent: "main"
         comment: "Enhanced MQTT implementation with improved connection handling. Added explicit print statements, wait_for_publish with timeout, on_publish callback, auto-reconnect logic. Removed any connection-check barriers - now publishes even if not connected (client buffers). Added verbose logging at each publish point to track all destinations. No destination-specific conditions exist in code."
+      - working: true
+        agent: "testing"
+        comment: "MQTT PUBLISHING VERIFIED FOR ALL DESTINATIONS. Comprehensive testing confirms MQTT messages are published successfully for all 6 destinations (ENTRANCE, ICU, PHARMACY, ROOM_101, EMERGENCY, STORAGE). Backend logs show 'Publishing MQTT for destination: X' for every destination. All tasks/new events published correctly. Tasks/assigned and tasks/complete events also working for destinations with available robots. Bug fix confirmed - MQTT publishing no longer limited to PHARMACY only."
 
 metadata:
   created_by: "main_agent"
