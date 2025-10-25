@@ -19,10 +19,15 @@ const waypoints = {
 };
 
 const connections = [
+  // Direct paths from Entrance
+  ["Entrance", "ICU"],
   ["Entrance", "Pharmacy"],
+  ["Entrance", "Room 101"],
+  // Paths from Pharmacy
   ["Pharmacy", "ICU"],
   ["Pharmacy", "Emergency Room"],
   ["Pharmacy", "Room 101"],
+  // Path to Storage
   ["Emergency Room", "Storage"]
 ];
 
