@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 
 const waypoints = {
-  "ENTRANCE": { x: 50, y: 10, color: "#ffffff", border: "#94a3b8", label: "ENTRANCE" },
+  "ENTRANCE": { x: 50, y: 12, color: "#ffffff", border: "#94a3b8", label: "ROBOT PARKING", width: 24, height: 14, isParking: true },
   "ICU": { x: 20, y: 40, color: "#ef4444", border: "#dc2626", label: "ICU" },
   "PHARMACY": { x: 50, y: 40, color: "#3b82f6", border: "#2563eb", label: "PHARMACY" },
   "ROOM_101": { x: 80, y: 40, color: "#10b981", border: "#059669", label: "ROOM 101" },
   "EMERGENCY": { x: 50, y: 65, color: "#fbbf24", border: "#f59e0b", label: "EMERGENCY" },
   "STORAGE": { x: 50, y: 88, color: "#a855f7", border: "#9333ea", label: "STORAGE" },
   // Aliases for backward compatibility
-  "Entrance": { x: 50, y: 10, color: "#ffffff", border: "#94a3b8", label: "ENTRANCE" },
+  "Entrance": { x: 50, y: 12, color: "#ffffff", border: "#94a3b8", label: "ROBOT PARKING", width: 24, height: 14, isParking: true },
   "Pharmacy": { x: 50, y: 40, color: "#3b82f6", border: "#2563eb", label: "PHARMACY" },
   "Room 101": { x: 80, y: 40, color: "#10b981", border: "#059669", label: "ROOM 101" },
   "Emergency Room": { x: 50, y: 65, color: "#fbbf24", border: "#f59e0b", label: "EMERGENCY" },
