@@ -247,7 +247,7 @@ export default function Dashboard() {
               <span>Quick Demo</span>
             </button>
             <button
-              onClick={fetchData}
+              onClick={handleRefresh}
               className="flex items-center space-x-2 px-5 py-2.5 bg-white rounded-full border-2 border-cyan-200 text-cyan-700 font-semibold hover:bg-cyan-50 transition-colors"
               data-testid="dashboard-refresh-btn"
             >
