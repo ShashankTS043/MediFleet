@@ -483,7 +483,7 @@ export default function FloorMap({ robots, movingRobots = [] }) {
                   transition: pos.isMoving ? "all 3s cubic-bezier(0.4, 0, 0.2, 1)" : "all 1s cubic-bezier(0.4, 0, 0.2, 1)"
                 }}
               >
-                {pos.isParked && pos.parkingIndex !== -1 ? `R${pos.parkingIndex + 1}` : pos.name}
+                {pos.isParked && pos.parkingIndex !== -1 ? pos.name.split('-')[1] : pos.name}
               </text>
             </g>
           ))}
