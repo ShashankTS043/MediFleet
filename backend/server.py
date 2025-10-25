@@ -100,6 +100,15 @@ def publish_mqtt_message(topic: str, payload: dict):
 # Create the main app without a prefix
 app = FastAPI()
 
+# Add CORS middleware FIRST - before including routers
+app.add_middleware(
+    CORSMiddleware,
+    allow_credentials=True,
+    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
 
