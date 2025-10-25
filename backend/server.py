@@ -94,7 +94,13 @@ async def initialize_robots():
         ]
         await db.robots.insert_many(robots)
     else:
-        # Reset all robots to ENTRANCE on startup
+        # Delete any extra robots beyond 3
+        all_robots = await db.robots.find({}, {"_id": 0, "id": 1}).sort("created_at", 1).to_list(100)
+        if len(all_robots) > 3:
+            robots_to_delete = [r["id"] for r in all_robots[3:]]
+            await db.robots.delete_many({"id": {"$in": robots_to_delete}})
+        
+        # Reset remaining robots to ENTRANCE on startup
         await db.robots.update_many(
             {},
             {"$set": {
