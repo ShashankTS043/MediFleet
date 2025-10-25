@@ -207,7 +207,8 @@ async def create_task(task_input: TaskCreate):
     
     await db.tasks.insert_one(doc)
     
-    # Publish MQTT message: tasks/new
+    # Publish MQTT message: tasks/new - ALL DESTINATIONS
+    print(f"🔔 Creating task - Publishing MQTT for destination: {task_obj.destination}")
     publish_mqtt_message("tasks/new", {
         "task_id": task_obj.id,
         "destination": task_obj.destination,
