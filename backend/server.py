@@ -270,8 +270,9 @@ async def update_task(task_id: str, task_update: TaskUpdate):
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Task not found")
     
-    # Publish MQTT message if task is completed
+    # Publish MQTT message if task is completed - ALL DESTINATIONS
     if update_data.get("status") == "completed":
+        print(f"🔔 Task completed - Publishing MQTT for task: {task_id}")
         publish_mqtt_message("tasks/complete", {
             "task_id": task_id,
             "robot_id": task.get("robot_id", "unknown"),
