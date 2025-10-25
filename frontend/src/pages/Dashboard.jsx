@@ -98,7 +98,7 @@ export default function Dashboard() {
       toast.info("Starting Quick Demo Mode...");
       
       // Create 3 tasks
-      const destinations = ["ICU", "Room 101", "Emergency Room"];
+      const destinations = ["ICU", "ROOM_101", "EMERGENCY"];
       const priorities = ["high", "medium", "urgent"];
       
       addLog("📋 Creating 3 tasks...");

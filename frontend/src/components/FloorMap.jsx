@@ -2,8 +2,14 @@ import { useState, useEffect } from "react";
 import { Tooltip } from "@/components/ui/tooltip";
 
 const waypoints = {
-  "Entrance": { x: 50, y: 10, color: "#ffffff", border: "#94a3b8", label: "ENTRANCE" },
+  "ENTRANCE": { x: 50, y: 10, color: "#ffffff", border: "#94a3b8", label: "ENTRANCE" },
   "ICU": { x: 20, y: 40, color: "#ef4444", border: "#dc2626", label: "ICU" },
+  "PHARMACY": { x: 50, y: 40, color: "#3b82f6", border: "#2563eb", label: "PHARMACY" },
+  "ROOM_101": { x: 80, y: 40, color: "#10b981", border: "#059669", label: "ROOM 101" },
+  "EMERGENCY": { x: 50, y: 65, color: "#fbbf24", border: "#f59e0b", label: "EMERGENCY" },
+  "STORAGE": { x: 50, y: 88, color: "#a855f7", border: "#9333ea", label: "STORAGE" },
+  // Aliases for backward compatibility
+  "Entrance": { x: 50, y: 10, color: "#ffffff", border: "#94a3b8", label: "ENTRANCE" },
   "Pharmacy": { x: 50, y: 40, color: "#3b82f6", border: "#2563eb", label: "PHARMACY" },
   "Room 101": { x: 80, y: 40, color: "#10b981", border: "#059669", label: "ROOM 101" },
   "Emergency Room": { x: 50, y: 65, color: "#fbbf24", border: "#f59e0b", label: "EMERGENCY" },
@@ -20,16 +26,16 @@ const waypoints = {
 
 const connections = [
   // Entrance to Hub (3 diagonal paths)
-  ["Entrance", "ICU"],
-  ["Entrance", "Pharmacy"],
-  ["Entrance", "Room 101"],
+  ["ENTRANCE", "ICU"],
+  ["ENTRANCE", "PHARMACY"],
+  ["ENTRANCE", "ROOM_101"],
   // Hub connections
-  ["ICU", "Pharmacy"],
-  ["Room 101", "Pharmacy"],
+  ["ICU", "PHARMACY"],
+  ["ROOM_101", "PHARMACY"],
   // Pharmacy to Emergency
-  ["Pharmacy", "Emergency Room"],
+  ["PHARMACY", "EMERGENCY"],
   // Emergency to Storage
-  ["Emergency Room", "Storage"]
+  ["EMERGENCY", "STORAGE"]
 ];
 
 export default function FloorMap({ robots }) {
@@ -41,7 +47,7 @@ export default function FloorMap({ robots }) {
     const newPositions = {};
     robots.forEach(robot => {
       const location = robot.location;
-      const waypoint = waypoints[location] || waypoints["Pharmacy"];
+      const waypoint = waypoints[location] || waypoints["ENTRANCE"];
       newPositions[robot.id] = {
         x: waypoint.x,
         y: waypoint.y,
@@ -54,7 +60,13 @@ export default function FloorMap({ robots }) {
   }, [robots]);
 
   const getWaypointInfo = (location) => {
-    const robotsHere = robots.filter(r => r.location === location);
+    const robotsHere = robots.filter(r => {
+      const robotWaypoint = waypoints[r.location];
+      const locationWaypoint = waypoints[location];
+      return robotWaypoint && locationWaypoint && 
+             robotWaypoint.x === locationWaypoint.x && 
+             robotWaypoint.y === locationWaypoint.y;
+    });
     return {
       location,
       robotCount: robotsHere.length,
@@ -109,11 +121,8 @@ export default function FloorMap({ robots }) {
           })}
 
           {/* Waypoints */}
-          {Object.entries(waypoints).map(([location, point]) => {
-            if (["Charging Station", "Surgery Wing", "Laboratory", "Radiology", "Pediatrics", "Cardiology", "Oncology", "Neurology"].includes(location)) {
-              return null; // Skip duplicates
-            }
-            
+          {["ENTRANCE", "PHARMACY", "ICU", "ROOM_101", "EMERGENCY", "STORAGE"].map((location) => {
+            const point = waypoints[location];
             const info = getWaypointInfo(location);
             const isHovered = hoveredWaypoint === location;
 

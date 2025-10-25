@@ -10,17 +10,12 @@ export default function BiddingModal({ isOpen, onClose, robots, destination }) {
   const calculateDistance = (location) => {
     // Simulated distance calculation (in meters)
     const distances = {
-      "Emergency Room": { "Emergency Room": 0, "Surgery Wing": 120, "ICU": 85, "Charging Station": 150 },
-      "Surgery Wing": { "Emergency Room": 120, "Surgery Wing": 0, "ICU": 95, "Charging Station": 110 },
-      "ICU": { "Emergency Room": 85, "Surgery Wing": 95, "ICU": 0, "Charging Station": 140 },
-      "Pharmacy": { "Emergency Room": 100, "Surgery Wing": 130, "ICU": 115, "Charging Station": 90 },
-      "Laboratory": { "Emergency Room": 110, "Surgery Wing": 80, "ICU": 125, "Charging Station": 100 },
-      "Radiology": { "Emergency Room": 95, "Surgery Wing": 105, "ICU": 90, "Charging Station": 120 },
-      "Pediatrics": { "Emergency Room": 130, "Surgery Wing": 70, "ICU": 135, "Charging Station": 95 },
-      "Cardiology": { "Emergency Room": 105, "Surgery Wing": 115, "ICU": 100, "Charging Station": 110 },
-      "Oncology": { "Emergency Room": 125, "Surgery Wing": 90, "ICU": 120, "Charging Station": 105 },
-      "Neurology": { "Emergency Room": 115, "Surgery Wing": 100, "ICU": 110, "Charging Station": 125 },
-      "Charging Station": { "Emergency Room": 150, "Surgery Wing": 110, "ICU": 140, "Charging Station": 0 }
+      "ENTRANCE": { "ENTRANCE": 0, "PHARMACY": 50, "ICU": 85, "ROOM_101": 85, "EMERGENCY": 120, "STORAGE": 150 },
+      "PHARMACY": { "ENTRANCE": 50, "PHARMACY": 0, "ICU": 95, "ROOM_101": 95, "EMERGENCY": 70, "STORAGE": 110 },
+      "ICU": { "ENTRANCE": 85, "PHARMACY": 95, "ICU": 0, "ROOM_101": 140, "EMERGENCY": 120, "STORAGE": 150 },
+      "ROOM_101": { "ENTRANCE": 85, "PHARMACY": 95, "ICU": 140, "ROOM_101": 0, "EMERGENCY": 120, "STORAGE": 150 },
+      "EMERGENCY": { "ENTRANCE": 120, "PHARMACY": 70, "ICU": 120, "ROOM_101": 120, "EMERGENCY": 0, "STORAGE": 90 },
+      "STORAGE": { "ENTRANCE": 150, "PHARMACY": 110, "ICU": 150, "ROOM_101": 150, "EMERGENCY": 90, "STORAGE": 0 }
     };
     
     const destDistances = distances[destination] || {};

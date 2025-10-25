@@ -18,16 +18,12 @@ export default function CreateTask() {
   const [createdTaskId, setCreatedTaskId] = useState(null);
   
   const destinations = [
-    "Emergency Room",
-    "Surgery Wing",
-    "ICU",
-    "Pharmacy",
-    "Laboratory",
-    "Radiology",
-    "Pediatrics",
-    "Cardiology",
-    "Oncology",
-    "Neurology"
+    { value: "ENTRANCE", label: "ENTRANCE", icon: "🏥" },
+    { value: "PHARMACY", label: "PHARMACY", icon: "💊" },
+    { value: "ICU", label: "ICU", icon: "🚑" },
+    { value: "ROOM_101", label: "ROOM_101", icon: "🛏️" },
+    { value: "EMERGENCY", label: "EMERGENCY", icon: "⚠️" },
+    { value: "STORAGE", label: "STORAGE", icon: "📦" }
   ];
   
   const priorities = [
@@ -135,8 +131,8 @@ export default function CreateTask() {
               >
                 <option value="">Select destination...</option>
                 {destinations.map((dest) => (
-                  <option key={dest} value={dest}>
-                    {dest}
+                  <option key={dest.value} value={dest.value}>
+                    {dest.icon} {dest.label}
                   </option>
                 ))}
               </select>
