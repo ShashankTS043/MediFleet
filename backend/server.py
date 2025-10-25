@@ -406,6 +406,11 @@ async def process_bidding(task_id: str):
         # Select robot with highest bid score
         selected_robot = max(available_robots, key=calculate_bid_score)
         
+        # Get distance for MQTT message
+        location = selected_robot.get("location", "ENTRANCE")
+        dest_distances = distances.get(location, {})
+        distance = dest_distances.get(destination, 100)
+        
         # Assign task
         await db.tasks.update_one(
             {"id": task_id},
@@ -422,6 +427,14 @@ async def process_bidding(task_id: str):
             {"id": selected_robot["id"]},
             {"$set": {"status": "busy"}}
         )
+        
+        # Publish MQTT message: tasks/assigned
+        publish_mqtt_message("tasks/assigned", {
+            "task_id": task_id,
+            "robot_id": selected_robot["id"],
+            "destination": destination,
+            "distance": distance
+        })
 
 # Include the router in the main app
 app.include_router(api_router)
