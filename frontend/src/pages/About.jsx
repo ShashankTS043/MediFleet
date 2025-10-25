@@ -3,8 +3,8 @@ import { Bot, Zap, Shield, BarChart, Users, Heart, Github, ExternalLink, Code } 
 export default function About() {
   const team = [
     { name: "Shashank T S", role: "Project Lead & Backend Developer", expertise: "FastAPI, MongoDB, System Architecture", avatar: "ST" },
-    { name: "Rachul C", role: "Frontend Developer & UI/UX Designer", expertise: "React, Design Systems, User Experience", avatar: "RC" },
-    { name: "Shreekesh S", role: "Hardware Integration & IoT Specialist", expertise: "ESP32, MQTT, Embedded Systems", avatar: "SS" }
+    { name: "Shreekesh S", role: "Frontend Developer & UI/UX Designer", expertise: "React, Design Systems, User Experience", avatar: "SS" },
+    { name: "Rahul C", role: "Hardware Integration & IoT Specialist", expertise: "ESP32, MQTT, Embedded Systems", avatar: "RC" }
   ];
   
   const techStack = [
