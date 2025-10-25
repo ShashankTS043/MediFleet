@@ -3,31 +3,34 @@ import { Tooltip } from "@/components/ui/tooltip";
 
 const waypoints = {
   "Entrance": { x: 50, y: 10, color: "#ffffff", border: "#94a3b8", label: "ENTRANCE" },
-  "Pharmacy": { x: 50, y: 30, color: "#3b82f6", border: "#2563eb", label: "PHARMACY" },
-  "ICU": { x: 20, y: 55, color: "#ef4444", border: "#dc2626", label: "ICU" },
-  "Emergency Room": { x: 50, y: 62, color: "#fbbf24", border: "#f59e0b", label: "EMERGENCY" },
-  "Room 101": { x: 80, y: 55, color: "#10b981", border: "#059669", label: "ROOM 101" },
-  "Storage": { x: 50, y: 85, color: "#a855f7", border: "#9333ea", label: "STORAGE" },
-  "Charging Station": { x: 50, y: 85, color: "#a855f7", border: "#9333ea", label: "STORAGE" },
-  "Surgery Wing": { x: 50, y: 30, color: "#3b82f6", border: "#2563eb", label: "PHARMACY" },
-  "Laboratory": { x: 50, y: 30, color: "#3b82f6", border: "#2563eb", label: "PHARMACY" },
-  "Radiology": { x: 20, y: 55, color: "#ef4444", border: "#dc2626", label: "ICU" },
-  "Pediatrics": { x: 80, y: 55, color: "#10b981", border: "#059669", label: "ROOM 101" },
-  "Cardiology": { x: 50, y: 62, color: "#fbbf24", border: "#f59e0b", label: "EMERGENCY" },
-  "Oncology": { x: 80, y: 55, color: "#10b981", border: "#059669", label: "ROOM 101" },
-  "Neurology": { x: 20, y: 55, color: "#ef4444", border: "#dc2626", label: "ICU" }
+  "ICU": { x: 20, y: 40, color: "#ef4444", border: "#dc2626", label: "ICU" },
+  "Pharmacy": { x: 50, y: 40, color: "#3b82f6", border: "#2563eb", label: "PHARMACY" },
+  "Room 101": { x: 80, y: 40, color: "#10b981", border: "#059669", label: "ROOM 101" },
+  "Emergency Room": { x: 50, y: 65, color: "#fbbf24", border: "#f59e0b", label: "EMERGENCY" },
+  "Storage": { x: 50, y: 88, color: "#a855f7", border: "#9333ea", label: "STORAGE" },
+  "Charging Station": { x: 50, y: 88, color: "#a855f7", border: "#9333ea", label: "STORAGE" },
+  "Surgery Wing": { x: 50, y: 40, color: "#3b82f6", border: "#2563eb", label: "PHARMACY" },
+  "Laboratory": { x: 50, y: 40, color: "#3b82f6", border: "#2563eb", label: "PHARMACY" },
+  "Radiology": { x: 20, y: 40, color: "#ef4444", border: "#dc2626", label: "ICU" },
+  "Pediatrics": { x: 80, y: 40, color: "#10b981", border: "#059669", label: "ROOM 101" },
+  "Cardiology": { x: 50, y: 65, color: "#fbbf24", border: "#f59e0b", label: "EMERGENCY" },
+  "Oncology": { x: 80, y: 40, color: "#10b981", border: "#059669", label: "ROOM 101" },
+  "Neurology": { x: 20, y: 40, color: "#ef4444", border: "#dc2626", label: "ICU" }
 };
 
 const connections = [
-  // Direct paths from Entrance
+  // Entrance to Hub (3 diagonal paths)
   ["Entrance", "ICU"],
   ["Entrance", "Pharmacy"],
   ["Entrance", "Room 101"],
-  // Paths from Pharmacy
-  ["Pharmacy", "ICU"],
-  ["Pharmacy", "Emergency Room"],
+  // Hub horizontal connections
+  ["ICU", "Pharmacy"],
   ["Pharmacy", "Room 101"],
-  // Path to Storage
+  // Hub to Emergency (3 vertical paths converging)
+  ["ICU", "Emergency Room"],
+  ["Pharmacy", "Emergency Room"],
+  ["Room 101", "Emergency Room"],
+  // Emergency to Storage
   ["Emergency Room", "Storage"]
 ];
 
