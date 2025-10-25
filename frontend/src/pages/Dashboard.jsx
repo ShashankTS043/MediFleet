@@ -31,6 +31,21 @@ export default function Dashboard() {
     }
   };
   
+  const handleRefresh = async () => {
+    try {
+      // Reset all robots to ENTRANCE
+      await axios.post(`${API}/robots/reset-all`);
+      addLog("🔄 All robots reset to ENTRANCE");
+      toast.success("All robots reset to starting position!");
+      
+      // Fetch updated data
+      await fetchData();
+    } catch (error) {
+      console.error("Error refreshing:", error);
+      toast.error("Failed to refresh");
+    }
+  };
+  
   useEffect(() => {
     fetchData();
     
