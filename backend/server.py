@@ -300,6 +300,13 @@ async def process_bidding(task_id: str):
     # Simulate bidding process
     await asyncio.sleep(2)
     
+    # Get task details
+    task = await db.tasks.find_one({"id": task_id}, {"_id": 0})
+    if not task:
+        return
+    
+    destination = task.get("destination", "")
+    
     # Update task to bidding
     await db.tasks.update_one(
         {"id": task_id},
@@ -308,12 +315,39 @@ async def process_bidding(task_id: str):
     
     await asyncio.sleep(3)
     
-    # Find available robot
+    # Find available robots
     available_robots = await db.robots.find({"status": "idle"}, {"_id": 0}).to_list(10)
     
     if available_robots:
-        # Select robot with highest battery
-        selected_robot = max(available_robots, key=lambda r: r["battery"])
+        # Distance matrix (same as frontend BiddingModal.jsx)
+        distances = {
+            "ENTRANCE": {"ENTRANCE": 0, "PHARMACY": 50, "ICU": 85, "ROOM_101": 85, "EMERGENCY": 120, "STORAGE": 150},
+            "PHARMACY": {"ENTRANCE": 50, "PHARMACY": 0, "ICU": 95, "ROOM_101": 95, "EMERGENCY": 70, "STORAGE": 110},
+            "ICU": {"ENTRANCE": 85, "PHARMACY": 95, "ICU": 0, "ROOM_101": 140, "EMERGENCY": 120, "STORAGE": 150},
+            "ROOM_101": {"ENTRANCE": 85, "PHARMACY": 95, "ICU": 140, "ROOM_101": 0, "EMERGENCY": 120, "STORAGE": 150},
+            "EMERGENCY": {"ENTRANCE": 120, "PHARMACY": 70, "ICU": 120, "ROOM_101": 120, "EMERGENCY": 0, "STORAGE": 90},
+            "STORAGE": {"ENTRANCE": 150, "PHARMACY": 110, "ICU": 150, "ROOM_101": 150, "EMERGENCY": 90, "STORAGE": 0}
+        }
+        
+        # Calculate bid scores for each robot
+        def calculate_bid_score(robot):
+            location = robot.get("location", "ENTRANCE")
+            battery = robot.get("battery", 100)
+            
+            # Get distance from robot's location to destination
+            dest_distances = distances.get(location, {})
+            distance = dest_distances.get(destination, 100)
+            
+            # Avoid division by zero
+            if distance == 0:
+                distance = 1
+            
+            # Bid score formula (same as frontend): (1000 / distance) * (battery / 100)
+            bid_score = (1000 / distance) * (battery / 100)
+            return bid_score
+        
+        # Select robot with highest bid score
+        selected_robot = max(available_robots, key=calculate_bid_score)
         
         # Assign task
         await db.tasks.update_one(
