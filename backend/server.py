@@ -179,6 +179,14 @@ async def create_task(task_input: TaskCreate):
     
     await db.tasks.insert_one(doc)
     
+    # Publish MQTT message: tasks/new
+    publish_mqtt_message("tasks/new", {
+        "task_id": task_obj.id,
+        "destination": task_obj.destination,
+        "priority": task_obj.priority,
+        "created_at": doc['created_at']
+    })
+    
     # Start bidding process in background
     asyncio.create_task(process_bidding(task_obj.id))
     
