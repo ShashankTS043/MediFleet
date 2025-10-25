@@ -14,6 +14,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [activityLogs, setActivityLogs] = useState([]);
   const [simulatingRobots, setSimulatingRobots] = useState(new Set());
+  const [movingRobots, setMovingRobots] = useState([]);
   
   const fetchData = async () => {
     try {
@@ -47,6 +48,29 @@ export default function Dashboard() {
     setActivityLogs(prev => [...prev, { time, message }]);
   };
   
+  const playArrivalSound = () => {
+    // Optional: Play a subtle arrival sound
+    try {
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.value = 800;
+      oscillator.type = 'sine';
+      
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 0.3);
+    } catch (error) {
+      // Silently fail if audio not supported
+    }
+  };
+  
   const simulateMovement = async (robot, task) => {
     if (simulatingRobots.has(robot.id)) return;
     
@@ -58,8 +82,22 @@ export default function Dashboard() {
       await axios.patch(`${API}/tasks/${task.id}`, { status: "moving" });
       addLog(`📍 ${robot.name} moving to ${task.destination}`);
       
-      // Wait 2 seconds for movement animation
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Add to moving robots for animation
+      setMovingRobots(prev => [
+        ...prev,
+        {
+          robotId: robot.id,
+          from: robot.location,
+          to: task.destination,
+          isMoving: true
+        }
+      ]);
+      
+      // Wait 3 seconds for movement animation
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      // Remove from moving robots
+      setMovingRobots(prev => prev.filter(mr => mr.robotId !== robot.id));
       
       // Update robot location
       await axios.patch(`${API}/robots/${robot.id}`, { 
@@ -73,6 +111,9 @@ export default function Dashboard() {
         completed_at: new Date().toISOString()
       });
       
+      // Play arrival sound
+      playArrivalSound();
+      
       addLog(`✅ ${robot.name} arrived at ${task.destination}`);
       addLog(`🎉 Task #${task.id.substring(0, 8)} completed`);
       
@@ -83,6 +124,7 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Error simulating movement:", error);
       toast.error("Failed to simulate movement");
+      setMovingRobots(prev => prev.filter(mr => mr.robotId !== robot.id));
     } finally {
       setSimulatingRobots(prev => {
         const newSet = new Set(prev);
@@ -208,7 +250,7 @@ export default function Dashboard() {
         ) : (
           <div className="space-y-8">
             {/* Floor Map - Centerpiece */}
-            <FloorMap robots={robots} />
+            <FloorMap robots={robots} movingRobots={movingRobots} />
             
             {/* Robot Status Cards */}
             <div>
