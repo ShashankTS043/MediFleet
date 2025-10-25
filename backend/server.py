@@ -45,6 +45,11 @@ class RobotCreate(BaseModel):
     location: str
     battery: int = 100
 
+class RobotUpdate(BaseModel):
+    status: Optional[str] = None
+    location: Optional[str] = None
+    battery: Optional[int] = None
+
 class Task(BaseModel):
     model_config = ConfigDict(extra="ignore")
     
@@ -61,6 +66,10 @@ class Task(BaseModel):
 class TaskCreate(BaseModel):
     destination: str
     priority: str
+
+class TaskUpdate(BaseModel):
+    status: Optional[str] = None
+    completed_at: Optional[str] = None
 
 class AnalyticsStats(BaseModel):
     total_tasks: int
@@ -142,6 +151,23 @@ async def get_task(task_id: str):
     
     return task
 
+@api_router.patch("/tasks/{task_id}")
+async def update_task(task_id: str, task_update: TaskUpdate):
+    update_data = {k: v for k, v in task_update.model_dump().items() if v is not None}
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    result = await db.tasks.update_one(
+        {"id": task_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    return {"message": "Task updated successfully"}
+
 # Robot routes
 @api_router.get("/robots", response_model=List[Robot])
 async def get_robots():
@@ -163,6 +189,23 @@ async def get_robot(robot_id: str):
         robot['created_at'] = datetime.fromisoformat(robot['created_at'])
     
     return robot
+
+@api_router.patch("/robots/{robot_id}")
+async def update_robot(robot_id: str, robot_update: RobotUpdate):
+    update_data = {k: v for k, v in robot_update.model_dump().items() if v is not None}
+    
+    if not update_data:
+        raise HTTPException(status_code=400, detail="No fields to update")
+    
+    result = await db.robots.update_one(
+        {"id": robot_id},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Robot not found")
+    
+    return {"message": "Robot updated successfully"}
 
 # Analytics routes
 @api_router.get("/analytics/stats", response_model=AnalyticsStats)
@@ -261,30 +304,6 @@ async def process_bidding(task_id: str):
         await db.robots.update_one(
             {"id": selected_robot["id"]},
             {"$set": {"status": "busy"}}
-        )
-        
-        # Start moving
-        await asyncio.sleep(2)
-        await db.tasks.update_one(
-            {"id": task_id},
-            {"$set": {"status": "moving"}}
-        )
-        
-        # Complete task
-        await asyncio.sleep(random.randint(5, 10))
-        await db.tasks.update_one(
-            {"id": task_id},
-            {"$set": {
-                "status": "completed",
-                "completed_at": datetime.now(timezone.utc).isoformat()
-            }}
-        )
-        
-        # Update robot
-        await db.robots.update_one(
-            {"id": selected_robot["id"]},
-            {"$set": {"status": "idle"},
-             "$inc": {"tasks_completed_today": 1, "total_tasks": 1}}
         )
 
 # Include the router in the main app
