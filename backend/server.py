@@ -82,20 +82,27 @@ async def initialize_robots():
     count = await db.robots.count_documents({})
     if count == 0:
         robots = [
-            {"id": str(uuid.uuid4()), "name": "MediBot-A1", "status": "idle", "location": "Emergency Room", 
-             "battery": 95, "tasks_completed_today": 12, "total_tasks": 156, "avg_completion_time": 4.5,
+            {"id": str(uuid.uuid4()), "name": "MediBot-A1", "status": "idle", "location": "Entrance", 
+             "battery": 95, "tasks_completed_today": 0, "total_tasks": 156, "avg_completion_time": 4.5,
              "created_at": datetime.now(timezone.utc).isoformat()},
-            {"id": str(uuid.uuid4()), "name": "MediBot-B2", "status": "busy", "location": "Surgery Wing", 
-             "battery": 78, "tasks_completed_today": 8, "total_tasks": 203, "avg_completion_time": 5.2,
+            {"id": str(uuid.uuid4()), "name": "MediBot-B2", "status": "idle", "location": "Entrance", 
+             "battery": 85, "tasks_completed_today": 0, "total_tasks": 203, "avg_completion_time": 5.2,
              "created_at": datetime.now(timezone.utc).isoformat()},
-            {"id": str(uuid.uuid4()), "name": "MediBot-C3", "status": "idle", "location": "ICU", 
-             "battery": 100, "tasks_completed_today": 15, "total_tasks": 189, "avg_completion_time": 3.8,
-             "created_at": datetime.now(timezone.utc).isoformat()},
-            {"id": str(uuid.uuid4()), "name": "MediBot-D4", "status": "charging", "location": "Charging Station", 
-             "battery": 45, "tasks_completed_today": 10, "total_tasks": 178, "avg_completion_time": 4.1,
+            {"id": str(uuid.uuid4()), "name": "MediBot-C3", "status": "idle", "location": "Entrance", 
+             "battery": 100, "tasks_completed_today": 0, "total_tasks": 189, "avg_completion_time": 3.8,
              "created_at": datetime.now(timezone.utc).isoformat()},
         ]
         await db.robots.insert_many(robots)
+    else:
+        # Reset all robots to Entrance on startup
+        await db.robots.update_many(
+            {},
+            {"$set": {
+                "location": "Entrance",
+                "status": "idle",
+                "tasks_completed_today": 0
+            }}
+        )
 
 @app.on_event("startup")
 async def startup_event():
