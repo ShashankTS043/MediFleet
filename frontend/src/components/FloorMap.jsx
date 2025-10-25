@@ -23,9 +23,10 @@ const connections = [
   ["Entrance", "ICU"],
   ["Entrance", "Pharmacy"],
   ["Entrance", "Room 101"],
-  // Hub horizontal connections
+  // Hub horizontal connections (complete line across)
   ["ICU", "Pharmacy"],
   ["Pharmacy", "Room 101"],
+  ["ICU", "Room 101"],
   // Hub to Emergency (3 vertical paths converging)
   ["ICU", "Emergency Room"],
   ["Pharmacy", "Emergency Room"],
