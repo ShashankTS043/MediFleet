@@ -470,9 +470,9 @@ export default function FloorMap({ robots, movingRobots = [] }) {
               {/* Robot name */}
               <text
                 x={pos.x}
-                y={pos.y + (pos.isMoving ? 6 : 5)}
+                y={pos.y + (pos.isMoving ? 6 : pos.isParked ? 6.5 : 5)}
                 textAnchor="middle"
-                fontSize="1.8"
+                fontSize={pos.isParked ? "1.6" : "1.8"}
                 fontWeight="600"
                 fill="#1e293b"
                 className="pointer-events-none select-none"
@@ -481,7 +481,7 @@ export default function FloorMap({ robots, movingRobots = [] }) {
                   transition: pos.isMoving ? "all 3s cubic-bezier(0.4, 0, 0.2, 1)" : "all 1s cubic-bezier(0.4, 0, 0.2, 1)"
                 }}
               >
-                {pos.name}
+                {pos.isParked && pos.parkingIndex !== -1 ? `R${pos.parkingIndex + 1}` : pos.name}
               </text>
             </g>
           ))}
