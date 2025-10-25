@@ -82,23 +82,23 @@ async def initialize_robots():
     count = await db.robots.count_documents({})
     if count == 0:
         robots = [
-            {"id": str(uuid.uuid4()), "name": "MediBot-A1", "status": "idle", "location": "Entrance", 
+            {"id": str(uuid.uuid4()), "name": "MediBot-A1", "status": "idle", "location": "ENTRANCE", 
              "battery": 95, "tasks_completed_today": 0, "total_tasks": 156, "avg_completion_time": 4.5,
              "created_at": datetime.now(timezone.utc).isoformat()},
-            {"id": str(uuid.uuid4()), "name": "MediBot-B2", "status": "idle", "location": "Entrance", 
+            {"id": str(uuid.uuid4()), "name": "MediBot-B2", "status": "idle", "location": "ENTRANCE", 
              "battery": 85, "tasks_completed_today": 0, "total_tasks": 203, "avg_completion_time": 5.2,
              "created_at": datetime.now(timezone.utc).isoformat()},
-            {"id": str(uuid.uuid4()), "name": "MediBot-C3", "status": "idle", "location": "Entrance", 
+            {"id": str(uuid.uuid4()), "name": "MediBot-C3", "status": "idle", "location": "ENTRANCE", 
              "battery": 100, "tasks_completed_today": 0, "total_tasks": 189, "avg_completion_time": 3.8,
              "created_at": datetime.now(timezone.utc).isoformat()},
         ]
         await db.robots.insert_many(robots)
     else:
-        # Reset all robots to Entrance on startup
+        # Reset all robots to ENTRANCE on startup
         await db.robots.update_many(
             {},
             {"$set": {
-                "location": "Entrance",
+                "location": "ENTRANCE",
                 "status": "idle",
                 "tasks_completed_today": 0
             }}
