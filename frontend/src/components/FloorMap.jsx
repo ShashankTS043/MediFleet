@@ -237,54 +237,121 @@ export default function FloorMap({ robots, movingRobots = [] }) {
             const point = waypoints[location];
             const info = getWaypointInfo(location);
             const isHovered = hoveredWaypoint === location;
+            const isParking = point.isParking;
 
             return (
               <g key={location}>
-                {/* Outer glow when hovered */}
-                {isHovered && (
-                  <circle
-                    cx={point.x}
-                    cy={point.y}
-                    r="6"
-                    fill={point.color}
-                    opacity="0.3"
-                    filter="url(#glow)"
-                  />
+                {isParking ? (
+                  // Parking station (rounded rectangle)
+                  <g>
+                    {/* Outer glow when hovered */}
+                    {isHovered && (
+                      <rect
+                        x={point.x - point.width / 2}
+                        y={point.y - point.height / 2}
+                        width={point.width}
+                        height={point.height}
+                        rx="2"
+                        fill={point.color}
+                        opacity="0.3"
+                        filter="url(#glow)"
+                      />
+                    )}
+                    
+                    {/* Main parking zone */}
+                    <rect
+                      x={point.x - point.width / 2}
+                      y={point.y - point.height / 2}
+                      width={point.width}
+                      height={point.height}
+                      rx="2"
+                      fill={point.color}
+                      stroke={point.border}
+                      strokeWidth="0.8"
+                      strokeDasharray="1,0.5"
+                      className="cursor-pointer transition-all duration-300"
+                      onMouseEnter={() => setHoveredWaypoint(location)}
+                      onMouseLeave={() => setHoveredWaypoint(null)}
+                      style={{
+                        filter: isHovered ? "drop-shadow(0 0 8px rgba(6, 182, 212, 0.8))" : "none"
+                      }}
+                    />
+                    
+                    {/* Parking spot markers */}
+                    {[42, 50, 58].map((spotX, idx) => (
+                      <circle
+                        key={idx}
+                        cx={spotX}
+                        cy={point.y + 5}
+                        r="0.8"
+                        fill={point.border}
+                        opacity="0.4"
+                      />
+                    ))}
+                    
+                    {/* Label */}
+                    <text
+                      x={point.x}
+                      y={point.y - point.height / 2 - 1}
+                      textAnchor="middle"
+                      fontSize="2.5"
+                      fontWeight="600"
+                      fill="#1e293b"
+                      className="pointer-events-none select-none"
+                    >
+                      {point.label}
+                    </text>
+                  </g>
+                ) : (
+                  // Regular waypoint (circle)
+                  <g>
+                    {/* Outer glow when hovered */}
+                    {isHovered && (
+                      <circle
+                        cx={point.x}
+                        cy={point.y}
+                        r="6"
+                        fill={point.color}
+                        opacity="0.3"
+                        filter="url(#glow)"
+                      />
+                    )}
+
+                    {/* Main waypoint circle */}
+                    <circle
+                      cx={point.x}
+                      cy={point.y}
+                      r="4"
+                      fill={point.color}
+                      stroke={point.border}
+                      strokeWidth="0.5"
+                      className="cursor-pointer transition-all duration-300"
+                      onMouseEnter={() => setHoveredWaypoint(location)}
+                      onMouseLeave={() => setHoveredWaypoint(null)}
+                      style={{
+                        filter: isHovered ? "drop-shadow(0 0 8px rgba(6, 182, 212, 0.8))" : "none",
+                        transform: isHovered ? "scale(1.2)" : "scale(1)",
+                        transformOrigin: `${point.x}% ${point.y}%`
+                      }}
+                    />
+
+                    {/* Label */}
+                    <text
+                      x={point.x}
+                      y={point.y + 7}
+                      textAnchor="middle"
+                      fontSize="2.5"
+                      fontWeight="600"
+                      fill="#1e293b"
+                      className="pointer-events-none select-none"
+                    >
+                      {point.label}
+                    </text>
+                  </g>
                 )}
 
-                {/* Main waypoint circle */}
-                <circle
-                  cx={point.x}
-                  cy={point.y}
-                  r="4"
-                  fill={point.color}
-                  stroke={point.border}
-                  strokeWidth="0.5"
-                  className="cursor-pointer transition-all duration-300"
-                  onMouseEnter={() => setHoveredWaypoint(location)}
-                  onMouseLeave={() => setHoveredWaypoint(null)}
-                  style={{
-                    filter: isHovered ? "drop-shadow(0 0 8px rgba(6, 182, 212, 0.8))" : "none",
-                    transform: isHovered ? "scale(1.2)" : "scale(1)",
-                    transformOrigin: `${point.x}% ${point.y}%`
-                  }}
-                />
-
-                {/* Label */}
-                <text
-                  x={point.x}
-                  y={point.y + 7}
-                  textAnchor="middle"
-                  fontSize="2.5"
-                  fontWeight="600"
-                  fill="#1e293b"
-                  className="pointer-events-none select-none"
-                >
-                  {point.label}
-                </text>
-
                 {/* Robot count badge */}
-                {info.robotCount > 0 && (
+                {info.robotCount > 0 && !isParking && (
                   <g>
                     <circle
                       cx={point.x + 3}
