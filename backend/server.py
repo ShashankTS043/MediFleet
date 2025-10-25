@@ -27,47 +27,75 @@ MQTT_BROKER = "test.mosquitto.org"
 MQTT_PORT = 1883
 MQTT_QOS = 1
 
-mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id="medifleet_server")
 mqtt_connected = False
+mqtt_connect_attempts = 0
 
 def on_mqtt_connect(client, userdata, flags, reason_code, properties):
-    global mqtt_connected
+    global mqtt_connected, mqtt_connect_attempts
     if reason_code == 0:
         mqtt_connected = True
-        logging.info("✅ Connected to MQTT broker successfully")
+        mqtt_connect_attempts = 0
+        print(f"✅ MQTT: Connected to {MQTT_BROKER}:{MQTT_PORT}")
+        logging.info(f"✅ MQTT: Connected to {MQTT_BROKER}:{MQTT_PORT}")
     else:
         mqtt_connected = False
-        logging.error(f"❌ Failed to connect to MQTT broker: {reason_code}")
+        print(f"❌ MQTT: Connection failed - reason code: {reason_code}")
+        logging.error(f"❌ MQTT: Connection failed - reason code: {reason_code}")
 
 def on_mqtt_disconnect(client, userdata, flags, reason_code, properties):
     global mqtt_connected
     mqtt_connected = False
-    logging.warning(f"⚠️ Disconnected from MQTT broker: {reason_code}")
+    print(f"⚠️ MQTT: Disconnected - reason code: {reason_code}")
+    logging.warning(f"⚠️ MQTT: Disconnected - reason code: {reason_code}")
+    # Auto-reconnect
+    if reason_code != 0:
+        try:
+            client.reconnect()
+        except:
+            pass
+
+def on_mqtt_publish(client, userdata, mid, reason_code, properties):
+    """Callback when message is published"""
+    print(f"✅ MQTT: Message published successfully (mid: {mid})")
 
 mqtt_client.on_connect = on_mqtt_connect
 mqtt_client.on_disconnect = on_mqtt_disconnect
+mqtt_client.on_publish = on_mqtt_publish
 
 # Connect to MQTT broker
 try:
+    print(f"🔌 MQTT: Connecting to {MQTT_BROKER}:{MQTT_PORT}...")
     mqtt_client.connect_async(MQTT_BROKER, MQTT_PORT, 60)
     mqtt_client.loop_start()
-    logging.info(f"🔌 Connecting to MQTT broker: {MQTT_BROKER}:{MQTT_PORT}")
+    logging.info(f"🔌 MQTT: Started connection to {MQTT_BROKER}:{MQTT_PORT}")
 except Exception as e:
-    logging.error(f"❌ Error connecting to MQTT broker: {e}")
+    print(f"❌ MQTT: Connection error: {e}")
+    logging.error(f"❌ MQTT: Connection error: {e}")
 
 def publish_mqtt_message(topic: str, payload: dict):
-    """Publish message to MQTT broker"""
+    """Publish message to MQTT broker - ALWAYS publishes regardless of destination"""
     try:
-        if mqtt_connected:
-            result = mqtt_client.publish(topic, json.dumps(payload), qos=MQTT_QOS)
-            if result.rc == mqtt.MQTT_ERR_SUCCESS:
-                logging.info(f"📡 MQTT Published to {topic}: {payload}")
-            else:
-                logging.error(f"❌ Failed to publish to {topic}: {result.rc}")
+        message_json = json.dumps(payload)
+        print(f"📡 MQTT: Attempting to publish to {topic}")
+        print(f"   Payload: {payload}")
+        print(f"   Connected: {mqtt_connected}")
+        
+        # Publish even if not connected - client will buffer
+        result = mqtt_client.publish(topic, message_json, qos=MQTT_QOS)
+        
+        # Wait for publish to complete
+        result.wait_for_publish(timeout=5.0)
+        
+        if result.rc == mqtt.MQTT_ERR_SUCCESS:
+            print(f"✅ MQTT: Published to {topic} successfully")
+            logging.info(f"✅ MQTT: Published to {topic}: {payload}")
         else:
-            logging.warning(f"⚠️ MQTT not connected, skipping publish to {topic}")
+            print(f"❌ MQTT: Publish failed to {topic} - error code: {result.rc}")
+            logging.error(f"❌ MQTT: Publish failed to {topic} - error code: {result.rc}")
     except Exception as e:
-        logging.error(f"❌ Error publishing MQTT message to {topic}: {e}")
+        print(f"❌ MQTT: Exception publishing to {topic}: {e}")
+        logging.error(f"❌ MQTT: Exception publishing to {topic}: {e}")
 
 # Create the main app without a prefix
 app = FastAPI()
