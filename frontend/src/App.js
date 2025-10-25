@@ -7,6 +7,8 @@ import Dashboard from "@/pages/Dashboard";
 import Robots from "@/pages/Robots";
 import Analytics from "@/pages/Analytics";
 import About from "@/pages/About";
+import MQTTDocs from "@/pages/MQTTDocs";
+import APIDocs from "@/pages/APIDocs";
 
 function App() {
   return (
@@ -19,6 +21,8 @@ function App() {
           <Route path="robots" element={<Robots />} />
           <Route path="analytics" element={<Analytics />} />
           <Route path="about" element={<About />} />
+          <Route path="mqtt-docs" element={<MQTTDocs />} />
+          <Route path="api-docs" element={<APIDocs />} />
         </Route>
       </Routes>
     </BrowserRouter>
