@@ -607,7 +607,7 @@ class MediFleetMQTTTester:
             ("Task Creation MQTT", self.test_task_creation_mqtt),
             ("Task Assignment MQTT", self.test_task_assignment_mqtt),
             ("Task Completion MQTT", self.test_task_completion_mqtt),
-            ("Full Workflow", self.test_full_workflow)
+            ("All Destinations MQTT", self.test_all_destinations_mqtt)
         ]
         
         for test_name, test_func in tests:
