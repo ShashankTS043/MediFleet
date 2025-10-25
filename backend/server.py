@@ -22,6 +22,53 @@ mongo_url = os.environ['MONGO_URL']
 client = AsyncIOMotorClient(mongo_url)
 db = client[os.environ['DB_NAME']]
 
+# MQTT Setup
+MQTT_BROKER = "test.mosquitto.org"
+MQTT_PORT = 1883
+MQTT_QOS = 1
+
+mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+mqtt_connected = False
+
+def on_mqtt_connect(client, userdata, flags, reason_code, properties):
+    global mqtt_connected
+    if reason_code == 0:
+        mqtt_connected = True
+        logging.info("✅ Connected to MQTT broker successfully")
+    else:
+        mqtt_connected = False
+        logging.error(f"❌ Failed to connect to MQTT broker: {reason_code}")
+
+def on_mqtt_disconnect(client, userdata, flags, reason_code, properties):
+    global mqtt_connected
+    mqtt_connected = False
+    logging.warning(f"⚠️ Disconnected from MQTT broker: {reason_code}")
+
+mqtt_client.on_connect = on_mqtt_connect
+mqtt_client.on_disconnect = on_mqtt_disconnect
+
+# Connect to MQTT broker
+try:
+    mqtt_client.connect_async(MQTT_BROKER, MQTT_PORT, 60)
+    mqtt_client.loop_start()
+    logging.info(f"🔌 Connecting to MQTT broker: {MQTT_BROKER}:{MQTT_PORT}")
+except Exception as e:
+    logging.error(f"❌ Error connecting to MQTT broker: {e}")
+
+def publish_mqtt_message(topic: str, payload: dict):
+    """Publish message to MQTT broker"""
+    try:
+        if mqtt_connected:
+            result = mqtt_client.publish(topic, json.dumps(payload), qos=MQTT_QOS)
+            if result.rc == mqtt.MQTT_ERR_SUCCESS:
+                logging.info(f"📡 MQTT Published to {topic}: {payload}")
+            else:
+                logging.error(f"❌ Failed to publish to {topic}: {result.rc}")
+        else:
+            logging.warning(f"⚠️ MQTT not connected, skipping publish to {topic}")
+    except Exception as e:
+        logging.error(f"❌ Error publishing MQTT message to {topic}: {e}")
+
 # Create the main app without a prefix
 app = FastAPI()
 
