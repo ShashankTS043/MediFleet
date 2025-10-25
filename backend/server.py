@@ -11,6 +11,8 @@ import uuid
 from datetime import datetime, timezone
 import random
 import asyncio
+import paho.mqtt.client as mqtt
+import json
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
