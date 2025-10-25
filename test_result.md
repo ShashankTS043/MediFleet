@@ -102,39 +102,34 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Critical bug fix: Wrong robot being assigned to tasks even when correct robot wins the bid. Backend bidding algorithm was using highest battery instead of bid score calculation."
+user_problem_statement: "Implement actual MQTT publishing to test.mosquitto.org:1883 for task events (new, assigned, complete)"
 
 backend:
-  - task: "Fix bidding algorithm to use bid scores"
+  - task: "MQTT Integration - Publish task events"
     implemented: true
     working: true
     file: "/app/backend/server.py"
     stuck_count: 0
-    priority: "critical"
-    needs_retesting: false
+    priority: "high"
+    needs_retesting: true
     status_history:
       - working: true
         agent: "main"
-        comment: "Fixed process_bidding() function to calculate bid scores based on distance and battery (same formula as frontend). Changed from 'max battery' to 'max bid score' selection. Backend now matches frontend bidding logic."
-      - working: true
-        agent: "testing"
-        comment: "COMPREHENSIVE TESTING COMPLETED - All bidding algorithm tests PASSED. Tested 4 scenarios: (1) ICU task with all robots at ENTRANCE - MediBot-C3 won with highest battery (100%), (2) PHARMACY task - MediBot-C3 won correctly, (3) STORAGE task - MediBot-C3 won correctly, (4) ICU task with robots at different locations - MediBot-A1 won when positioned at ICU (bid score 950.00 vs others <12). Algorithm correctly calculates bid_score = (1000/distance) * (battery/100) and assigns tasks to highest scoring robot. Robot status updates work correctly (winner becomes 'busy', others remain 'idle'). Backend bidding process: pending → bidding → assigned works as expected. Critical bug fix is fully functional."
+        comment: "Installed paho-mqtt library. Added MQTT client connection to test.mosquitto.org:1883. Implemented publishing for 3 topics: tasks/new (create_task), tasks/assigned (process_bidding after assignment), tasks/complete (update_task when status=completed). Using QoS 1 for all messages. MQTT client connects asynchronously on startup."
 
 metadata:
   created_by: "main_agent"
   version: "1.0"
-  test_sequence: 2
+  test_sequence: 3
   run_ui: false
 
 test_plan:
   current_focus:
-    - "Fix bidding algorithm to use bid scores"
+    - "MQTT Integration - Publish task events"
   stuck_tasks: []
   test_all: false
-  test_priority: "critical_first"
+  test_priority: "high_first"
 
 agent_communication:
   - agent: "main"
-    message: "Fixed critical bug in backend bidding algorithm. The issue was that backend was selecting robot with highest battery, while frontend was showing winner based on bid scores (distance + battery). Now both use same algorithm: bid_score = (1000 / distance) * (battery / 100). Robot closest to destination with good battery will win. Need to test with real task creation."
-  - agent: "testing"
-    message: "CRITICAL BUG FIX VERIFIED - Bidding algorithm is working perfectly! Created comprehensive backend_test.py and ran 4 test scenarios. All tests PASSED: (1) Tasks to ICU/PHARMACY/STORAGE with robots at same location correctly select highest battery robot (MediBot-C3), (2) Task to ICU with robots at different locations correctly selects closest robot (MediBot-A1 at ICU wins with score 950.00). Backend process_bidding() function correctly implements bid_score = (1000/distance) * (battery/100) formula. Task status progression (pending→bidding→assigned) and robot status updates (winner becomes busy) work correctly. The fix successfully resolves the reported issue where wrong robots were being assigned."
+    message: "Implemented MQTT publishing for MediFleet task events. Connected to test.mosquitto.org:1883 with QoS 1. Messages published: 1) tasks/new when task created (task_id, destination, priority, created_at), 2) tasks/assigned when robot assigned after bidding (task_id, robot_id, destination, distance), 3) tasks/complete when task marked completed (task_id, robot_id, completed_at). MQTT client starts on backend startup with async connection. Need to test message publishing works correctly."
