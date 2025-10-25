@@ -228,6 +228,11 @@ async def update_task(task_id: str, task_update: TaskUpdate):
     if not update_data:
         raise HTTPException(status_code=400, detail="No fields to update")
     
+    # Get task details before update for MQTT
+    task = await db.tasks.find_one({"id": task_id}, {"_id": 0})
+    if not task:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
     result = await db.tasks.update_one(
         {"id": task_id},
         {"$set": update_data}
@@ -235,6 +240,14 @@ async def update_task(task_id: str, task_update: TaskUpdate):
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Task not found")
+    
+    # Publish MQTT message if task is completed
+    if update_data.get("status") == "completed":
+        publish_mqtt_message("tasks/complete", {
+            "task_id": task_id,
+            "robot_id": task.get("robot_id", "unknown"),
+            "completed_at": update_data.get("completed_at", datetime.now(timezone.utc).isoformat())
+        })
     
     return {"message": "Task updated successfully"}
 
