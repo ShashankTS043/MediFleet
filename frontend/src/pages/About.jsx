@@ -58,7 +58,7 @@ export default function About() {
               efficient hospital logistics and autonomous robot coordination systems.
             </p>
             <div className="flex flex-wrap gap-3">
-              <a href="https://github.com/medifleet" target="_blank" rel="noopener noreferrer" 
+              <a href="https://github.com/ShashankTS043/MediFleet" target="_blank" rel="noopener noreferrer" 
                  className="inline-flex items-center space-x-2 px-4 py-2 bg-slate-800 text-white rounded-lg hover:bg-slate-700 transition-colors">
                 <Github className="w-4 h-4" />
                 <span>View on GitHub</span>
