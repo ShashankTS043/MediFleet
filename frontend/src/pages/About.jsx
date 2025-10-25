@@ -156,6 +156,23 @@ export default function About() {
           <p className="text-slate-600 mb-6">
             Interested in implementing MediFleet at your healthcare facility or collaborating on this project?
           </p>
+          
+          {/* Email Addresses */}
+          <div className="mb-6 space-y-2">
+            <p className="text-sm font-semibold text-slate-700 mb-3">Contact our team:</p>
+            <div className="flex flex-col items-center gap-2">
+              <a href="mailto:shashankts043@gmail.com" className="text-cyan-600 hover:text-cyan-700 hover:underline transition-colors">
+                📧 shashankts043@gmail.com
+              </a>
+              <a href="mailto:shreekeshsowmiyan@gmail.com" className="text-cyan-600 hover:text-cyan-700 hover:underline transition-colors">
+                📧 shreekeshsowmiyan@gmail.com
+              </a>
+              <a href="mailto:rahulchandrashekar285@gmail.com" className="text-cyan-600 hover:text-cyan-700 hover:underline transition-colors">
+                📧 rahulchandrashekar285@gmail.com
+              </a>
+            </div>
+          </div>
+          
           <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button className="btn-primary" data-testid="contact-btn">
               Contact Us
