@@ -58,9 +58,31 @@ export default function FloorMap({ robots, movingRobots = [] }) {
     const newPositions = {};
     const newAnimatingPaths = new Set();
     
-    robots.forEach(robot => {
+    // Get robots at ENTRANCE for parking position calculation
+    const robotsAtEntrance = robots.filter(r => {
+      const loc = r.location.toUpperCase();
+      return loc === "ENTRANCE" || loc === "ENTRANCE";
+    });
+    
+    robots.forEach((robot, index) => {
       const location = robot.location;
       const waypoint = waypoints[location] || waypoints["ENTRANCE"];
+      
+      // Check if robot is at parking station
+      const isAtParking = location.toUpperCase() === "ENTRANCE" || location === "Entrance";
+      
+      let x = waypoint.x;
+      let y = waypoint.y;
+      
+      // Position robots horizontally at parking station
+      if (isAtParking && !movingRobots.find(mr => mr.robotId === robot.id)) {
+        const parkingIndex = robotsAtEntrance.findIndex(r => r.id === robot.id);
+        const parkingPositions = [42, 50, 58]; // Left, Center, Right positions
+        if (parkingIndex !== -1 && parkingIndex < parkingPositions.length) {
+          x = parkingPositions[parkingIndex];
+          y = 12; // Parking station Y position
+        }
+      }
       
       // Check if this robot is moving
       const movingRobot = movingRobots.find(mr => mr.robotId === robot.id);
@@ -77,9 +99,13 @@ export default function FloorMap({ robots, movingRobots = [] }) {
         const distance = calculateDistance(fromWaypoint.x, fromWaypoint.y, toWaypoint.x, toWaypoint.y);
         const distanceMeters = Math.round(distance * 2); // Approximate meters
         
+        // Use destination position for moving robots
+        x = toWaypoint.x;
+        y = toWaypoint.y;
+        
         newPositions[robot.id] = {
-          x: toWaypoint.x,
-          y: toWaypoint.y,
+          x,
+          y,
           name: robot.name,
           status: robot.status,
           battery: robot.battery,
@@ -91,14 +117,16 @@ export default function FloorMap({ robots, movingRobots = [] }) {
         };
       } else {
         newPositions[robot.id] = {
-          x: waypoint.x,
-          y: waypoint.y,
+          x,
+          y,
           name: robot.name,
           status: robot.status,
           battery: robot.battery,
           isMoving: false,
           rotation: 0,
-          distance: 0
+          distance: 0,
+          isParked: isAtParking,
+          parkingIndex: isAtParking ? robotsAtEntrance.findIndex(r => r.id === robot.id) : -1
         };
       }
     });
