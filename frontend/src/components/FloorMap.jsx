@@ -89,7 +89,24 @@ export default function FloorMap({ robots }) {
             </linearGradient>
           </defs>
 
-          {/* Connection Lines - Removed */}
+          {/* Connection Lines */}
+          {connections.map(([start, end], index) => {
+            const startPoint = waypoints[start];
+            const endPoint = waypoints[end];
+            return (
+              <line
+                key={index}
+                x1={startPoint.x}
+                y1={startPoint.y}
+                x2={endPoint.x}
+                y2={endPoint.y}
+                stroke="url(#lineGradient)"
+                strokeWidth="0.5"
+                strokeDasharray="2,2"
+                opacity="0.6"
+              />
+            );
+          })}
 
           {/* Waypoints */}
           {Object.entries(waypoints).map(([location, point]) => {
