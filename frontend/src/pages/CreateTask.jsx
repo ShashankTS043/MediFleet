@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { MapPin, AlertCircle, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
+import BiddingModal from "@/components/BiddingModal";
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
@@ -12,6 +13,9 @@ export default function CreateTask() {
   const [destination, setDestination] = useState("");
   const [priority, setPriority] = useState("medium");
   const [loading, setLoading] = useState(false);
+  const [showBiddingModal, setShowBiddingModal] = useState(false);
+  const [robots, setRobots] = useState([]);
+  const [createdTaskId, setCreatedTaskId] = useState(null);
   
   const destinations = [
     "Emergency Room",
@@ -33,6 +37,43 @@ export default function CreateTask() {
     { value: "urgent", label: "Urgent", color: "from-red-500 to-pink-500" }
   ];
   
+  // Fetch robots on mount
+  useEffect(() => {
+    const fetchRobots = async () => {
+      try {
+        const response = await axios.get(`${API}/robots`);
+        setRobots(response.data);
+      } catch (error) {
+        console.error("Error fetching robots:", error);
+      }
+    };
+    
+    fetchRobots();
+  }, []);
+  
+  // Poll task status to detect when bidding starts
+  useEffect(() => {
+    if (!createdTaskId) return;
+    
+    const checkTaskStatus = async () => {
+      try {
+        const response = await axios.get(`${API}/tasks/${createdTaskId}`);
+        const task = response.data;
+        
+        if (task.status === "bidding") {
+          setShowBiddingModal(true);
+          setCreatedTaskId(null); // Stop polling
+        }
+      } catch (error) {
+        console.error("Error checking task status:", error);
+      }
+    };
+    
+    const interval = setInterval(checkTaskStatus, 500);
+    
+    return () => clearInterval(interval);
+  }, [createdTaskId]);
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -44,22 +85,26 @@ export default function CreateTask() {
     setLoading(true);
     
     try {
-      await axios.post(`${API}/tasks`, {
+      const response = await axios.post(`${API}/tasks`, {
         destination,
         priority
       });
       
       toast.success("Task created successfully! Robot bidding initiated.");
-      
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1500);
+      setCreatedTaskId(response.data.id);
     } catch (error) {
       console.error("Error creating task:", error);
       toast.error("Failed to create task. Please try again.");
-    } finally {
       setLoading(false);
     }
+  };
+  
+  const handleModalClose = () => {
+    setShowBiddingModal(false);
+    setLoading(false);
+    setTimeout(() => {
+      navigate("/dashboard");
+    }, 500);
   };
   
   return (
@@ -158,6 +203,14 @@ export default function CreateTask() {
           </form>
         </div>
       </div>
+      
+      {/* Bidding Modal */}
+      <BiddingModal 
+        isOpen={showBiddingModal}
+        onClose={handleModalClose}
+        robots={robots}
+        destination={destination}
+      />
     </div>
   );
 }
