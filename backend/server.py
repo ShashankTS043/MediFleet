@@ -470,7 +470,8 @@ async def process_bidding(task_id: str):
             {"$set": {"status": "busy"}}
         )
         
-        # Publish MQTT message: tasks/assigned
+        # Publish MQTT message: tasks/assigned - ALL DESTINATIONS
+        print(f"🔔 Task assigned - Publishing MQTT for destination: {destination}")
         publish_mqtt_message("tasks/assigned", {
             "task_id": task_id,
             "robot_id": selected_robot["id"],
