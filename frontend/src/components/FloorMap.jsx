@@ -277,17 +277,19 @@ export default function FloorMap({ robots, movingRobots = [] }) {
                       }}
                     />
                     
-                    {/* Parking spot markers */}
-                    {[42, 50, 58].map((spotX, idx) => (
-                      <circle
-                        key={idx}
-                        cx={spotX}
-                        cy={point.y + 5}
-                        r="0.8"
-                        fill={point.border}
-                        opacity="0.4"
-                      />
-                    ))}
+                    {/* Dashed outline box for robot parking spots */}
+                    <rect
+                      x={42 - 2}
+                      y={point.y - 4}
+                      width={20}
+                      height={10}
+                      rx="1"
+                      fill="none"
+                      stroke={point.border}
+                      strokeWidth="0.5"
+                      strokeDasharray="1,0.8"
+                      opacity="0.5"
+                    />
                     
                     {/* Label */}
                     <text
