@@ -256,12 +256,17 @@ async def get_task(task_id: str):
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
     
-    if isinstance(task.get('created_at'), str):
-        task['created_at'] = datetime.fromisoformat(task['created_at'])
-    if isinstance(task.get('assigned_at'), str):
-        task['assigned_at'] = datetime.fromisoformat(task['assigned_at'])
-    if isinstance(task.get('completed_at'), str):
-        task['completed_at'] = datetime.fromisoformat(task['completed_at'])
+    try:
+        if isinstance(task.get('created_at'), str):
+            task['created_at'] = datetime.fromisoformat(task['created_at'])
+        if isinstance(task.get('assigned_at'), str):
+            task['assigned_at'] = datetime.fromisoformat(task['assigned_at'])
+        if isinstance(task.get('completed_at'), str):
+            task['completed_at'] = datetime.fromisoformat(task['completed_at'])
+    except ValueError as e:
+        logging.warning(f"Invalid datetime in task {task_id}: {e}")
+        if 'completed_at' in task and isinstance(task.get('completed_at'), str):
+            task['completed_at'] = datetime.now(timezone.utc)
     
     return task
 
