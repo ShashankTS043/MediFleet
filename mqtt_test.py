@@ -411,20 +411,20 @@ class MediFleetMQTTTester:
         
         return success
     
-    def test_full_workflow(self) -> bool:
-        """Test complete workflow: create → assign → complete"""
-        print("\n=== TESTING FULL WORKFLOW ===")
+    def test_destination_mqtt_publishing(self, destination: str) -> bool:
+        """Test MQTT publishing for a specific destination - complete workflow"""
+        print(f"\n=== TESTING MQTT PUBLISHING FOR {destination} ===")
         
         # Clear previous messages
         self.mqtt_client.clear_messages()
         
         # Create task
         task_data = {
-            "destination": "EMERGENCY",
-            "priority": "urgent"
+            "destination": destination,
+            "priority": "medium"
         }
         
-        print(f"📝 Starting full workflow test with task: {task_data}")
+        print(f"📝 Creating task to {destination}: {task_data}")
         response = self.make_request("POST", "/tasks", task_data)
         
         if response.status_code != 200:
@@ -441,7 +441,13 @@ class MediFleetMQTTTester:
         if not new_message:
             print("❌ Step 1 failed: No tasks/new message")
             return False
-        print("✅ Step 1 passed: tasks/new message received")
+        
+        # Verify destination in tasks/new message
+        if new_message["payload"].get("destination") != destination:
+            print(f"❌ Step 1 failed: Wrong destination in tasks/new - expected {destination}, got {new_message['payload'].get('destination')}")
+            return False
+        
+        print(f"✅ Step 1 passed: tasks/new message received for {destination}")
         
         # Step 2: Verify tasks/assigned
         print("⏳ Step 2: Waiting for tasks/assigned message...")
@@ -450,8 +456,13 @@ class MediFleetMQTTTester:
             print("❌ Step 2 failed: No tasks/assigned message")
             return False
         
+        # Verify destination in tasks/assigned message
+        if assigned_message["payload"].get("destination") != destination:
+            print(f"❌ Step 2 failed: Wrong destination in tasks/assigned - expected {destination}, got {assigned_message['payload'].get('destination')}")
+            return False
+        
         robot_id = assigned_message["payload"].get("robot_id")
-        print(f"✅ Step 2 passed: tasks/assigned message received (robot: {robot_id})")
+        print(f"✅ Step 2 passed: tasks/assigned message received for {destination} (robot: {robot_id})")
         
         # Step 3: Complete task and verify tasks/complete
         completion_time = datetime.now(timezone.utc).isoformat()
@@ -488,11 +499,64 @@ class MediFleetMQTTTester:
                 success = False
         
         if success:
-            print("🎉 Full workflow test PASSED: All MQTT messages published correctly!")
+            print(f"🎉 MQTT test for {destination} PASSED: All 3 MQTT messages published correctly!")
         else:
-            print("❌ Full workflow test FAILED: Task ID mismatches detected")
+            print(f"❌ MQTT test for {destination} FAILED: Task ID mismatches detected")
         
         return success
+    
+    def test_all_destinations_mqtt(self) -> Dict[str, bool]:
+        """Test MQTT publishing for ALL destinations as specified in review request"""
+        print("\n=== TESTING MQTT PUBLISHING FOR ALL DESTINATIONS ===")
+        
+        # All 6 destinations from review request
+        destinations = ["ENTRANCE", "ICU", "PHARMACY", "ROOM_101", "EMERGENCY", "STORAGE"]
+        results = {}
+        
+        for destination in destinations:
+            try:
+                print(f"\n{'='*80}")
+                print(f"🧪 TESTING DESTINATION: {destination}")
+                print(f"{'='*80}")
+                
+                result = self.test_destination_mqtt_publishing(destination)
+                results[destination] = result
+                
+                status = "✅ PASS" if result else "❌ FAIL"
+                print(f"\n🎯 {destination}: {status}")
+                
+                # Brief pause between destination tests
+                time.sleep(3)
+                
+            except Exception as e:
+                print(f"❌ Test for {destination} failed with error: {e}")
+                results[destination] = False
+        
+        # Summary for all destinations
+        print("\n" + "=" * 80)
+        print("📊 ALL DESTINATIONS MQTT TEST SUMMARY")
+        print("=" * 80)
+        
+        passed = 0
+        total = len(results)
+        
+        for destination, result in results.items():
+            status = "✅ PASS" if result else "❌ FAIL"
+            print(f"   {destination:12} : {status}")
+            if result:
+                passed += 1
+        
+        print(f"\nOverall: {passed}/{total} destinations passed")
+        print(f"Expected: {total * 3} MQTT messages ({total} destinations × 3 events each)")
+        
+        if passed == total:
+            print("🎉 ALL DESTINATIONS PASSED - MQTT publishing works for ALL destinations!")
+        else:
+            failed_destinations = [dest for dest, result in results.items() if not result]
+            print(f"⚠️  FAILED DESTINATIONS: {failed_destinations}")
+            print("❌ MQTT publishing bug confirmed - not all destinations work!")
+        
+        return results
     
     def check_backend_logs(self):
         """Check backend logs for MQTT-related messages"""
